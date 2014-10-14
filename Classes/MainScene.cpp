@@ -1,7 +1,7 @@
 #include "MainScene.h"
 #include "GameLevelChoose.h"
 
-
+USING_NS_CC;
 
 MainScene::MainScene(void)
 {
@@ -37,29 +37,31 @@ void MainScene::chooseMenu()
 	const char* norImg = "choose_btn_nor.png";
 	const char* lightImg = "choose_btn_light.png";
 
-	//¿ªÊ¼
-	auto title = Label::create("Start", "Arial",30);
-	title->setPosition(ccp(60,35));
+	//biao'ti
+    auto title = Label::createWithSystemFont("Start", "Arial", 30);
+	title->setPosition(Vec2(60, 35));
+    
+    
 	auto startItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::startGame, this));
 	startItem->addChild(title);
 
-	//ÓÎÏ·¹æÔò
-	title = Label::create("Role", "Arial", 30);
-	title->setPosition(ccp(60,35));
+	//â€Å’Å“âˆ‘Ï€ÃŠâ€˜Ãš
+	title = Label::createWithSystemFont("Role", "Arial", 30);
+	title->setPosition(Vec2(60,35));
 	auto gameRoleItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::gameRole, this));
 	gameRoleItem->addChild(title);
 
-	//¸ü¶àÓÎÏ·
-	title = Label::create("More", "Arial", 30);
-	title->setPosition(ccp(60,35));
+	//âˆÂ¸âˆ‚â€¡â€Å’Å“âˆ‘
+	title = Label::createWithSystemFont("More", "Arial", 30);
+	title->setPosition(Vec2(60,35));
 	auto moreGameItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::moreGame, this));
 	moreGameItem->addChild(title);
 
-	//²Ëµ¥
+	//â‰¤Ã€Âµâ€¢
 	auto menu = CCMenu::create(startItem, gameRoleItem, moreGameItem, nullptr);
-	//·ÅÔÚÍ¬Ò»ÁÐ
+	//âˆ‘â‰ˆâ€˜â„Ã•Â¨â€œÂªÂ¡â€“
 	menu->alignItemsVerticallyWithPadding(20);
-	menu->setPosition(ccp(visibleSize.width/2, visibleSize.height/2));
+	menu->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
 
 	this->addChild(menu);
 	
@@ -67,18 +69,16 @@ void MainScene::chooseMenu()
 
 void MainScene::startGame(Ref* pSender)
 {
-	CCLog("startGame");
+	CCLOG("startGame");
 	auto scene = GameLevelChoose::createScene();
-	//auto layer = Layer::create();
-	//scene->addChild(layer);
-	Director::sharedDirector()->replaceScene(TransitionFade::create(1,scene));
+	Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
 	
 }
 void MainScene::gameRole(Ref* pSender)
 {
-	CCLog("gameRole");
+	CCLOG("gameRole");
 }
 void MainScene::moreGame(Ref* pSender)
 {
-	CCLog("moreGame");
+	CCLOG("moreGame");
 }
