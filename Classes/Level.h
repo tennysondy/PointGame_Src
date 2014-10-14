@@ -2,7 +2,7 @@
 #define __LEVEL_H__
 
 #define LEVEL_ROW              9
-#define LEVEL_COLUMN       9
+#define LEVEL_COLUMN           9
 
 int level1[LEVEL_ROW][LEVEL_COLUMN]={
 	{1,0,1,0,1,0,1,0,1},

@@ -1,5 +1,6 @@
 #include "GameLevelChoose.h"
 #include "PointGameScene.h"
+#include "Constant.h"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ bool GameLevelChoose::init()
 		int index = i + 1;
 		levelItem[i] = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(GameLevelChoose::level, this));
 		levelItem[i]->setTag(LEVEL_TAG + index);
-		//itoa(index, txt, 10);
+		
 		string txt = to_string(index);
 		levelItem[i]->addChild(GameLevelChoose::createLevelTxt(txt));
 	}
@@ -46,9 +47,9 @@ bool GameLevelChoose::init()
 	menu1->alignItemsHorizontallyWithPadding(20);
 	menu2->alignItemsHorizontallyWithPadding(20);
 	menu3->alignItemsHorizontallyWithPadding(20);
-	menu1->setPosition(ccp(visibleSize.width/2, visibleSize.height*6.5/8));
-	menu2->setPosition(ccp(visibleSize.width/2, visibleSize.height*4.5/8));
-	menu3->setPosition(ccp(visibleSize.width/2, visibleSize.height*2.5/8));
+	menu1->setPosition(Vec2(visibleSize.width/2, visibleSize.height*6.5/8));
+	menu2->setPosition(Vec2(visibleSize.width/2, visibleSize.height*4.5/8));
+	menu3->setPosition(Vec2(visibleSize.width/2, visibleSize.height*2.5/8));
 
 	addChild(menu1, 1);
 	addChild(menu2, 1);
@@ -57,21 +58,22 @@ bool GameLevelChoose::init()
 }
 Label* GameLevelChoose::createLevelTxt(string& sLvl)
 {
-	auto level_txt = Label::create(sLvl, "Arial", 40);
+	auto level_txt = Label::createWithSystemFont(sLvl, "Arial", 40);
 	level_txt->setColor(Color3B::RED);
-	level_txt->setPosition(ccp(40,40));
+	level_txt->setPosition(Vec2(40,40));
 
 	return level_txt;
 }
 
-void GameLevelChoose::level(CCObject* pSender)
+void GameLevelChoose::level(Ref* pSender)
 {
 	MenuItemImage *item = (MenuItemImage *)pSender;
-	_level = item->getTag()-LEVEL_TAG;
+	_level = item->getTag() - LEVEL_TAG;
 	CCLOG("level: %d", _level);
 	auto scene = PointGame::createScene();
-	auto layer = (PointGame *)scene->getChildren().at(0);
-	layer->curLevelIndex = _level;
-	Director::sharedDirector()->replaceScene(TransitionFade::create(1,scene));
+	//auto layer = (PointGame *)(scene->getChildren().at(0));
+	//layer->curLevelIndex = _level;
+    Constant::level = _level;
+	Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
 	
 }

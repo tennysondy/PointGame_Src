@@ -8,14 +8,13 @@
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include "Level.h"
+#include "Constant.h"
 
 USING_NS_CC;
 //PointInfo currentTouchPoint;
 //PointInfo currentTouchPointCurrent;
 using namespace std;
 using namespace CocosDenshion;
-
-
 
 Scene* PointGame::createScene()
 {
@@ -45,7 +44,6 @@ bool PointGame::init()
     {
         return false;
     }
-	this->setTouchEnabled(true);
     auto layer = LayerColor::create(Color4B(255,255,204,255));
 	this->addChild(layer, 0);
     Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -78,7 +76,7 @@ bool PointGame::init()
 	menu1->setPosition(Vec2::ZERO);
 	this->addChild(menu1, 1);
 
-	//Ìí¼Ó·µ»Ø¹Ø¿¨Ñ¡Ôñ°´Å¥
+	//ÃƒÃŒÂºâ€âˆ‘ÂµÂªÃ¿Ï€Ã¿Ã¸Â®â€”Â°â€˜Ã’âˆžÂ¥â‰ˆâ€¢
 	auto homeItem = MenuItemImage::create("homeItemNormal.png",
 		"homeItemLight.png",
 		CC_CALLBACK_1(PointGame::backToChooseLevel, this));
@@ -87,27 +85,7 @@ bool PointGame::init()
 	auto menuHome = Menu::create(homeItem, nullptr);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menuHome, 1);
-    /////////////////////////////
-    // 3. add your codes below...
 
-    // add a label shows "title"
-    // create and initialize a label
-    
-    auto title = LabelTTF::create("PointGame", "Arial", 24);
-	title->setColor(Color3B::BLACK);
-    // position the label on the center of the screen
-    title->setPosition(Vec2(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - title->getContentSize().height));
-
-    // add the label as a child to this layer
-	this->addChild(title, 1);
-
-	//	int level[9][9];
-	//	memset(level,0,sizeof(level));
-	//	PointGame::drawInit(level);
-	//	break;
-	//}
-	 //´ò¿ª¼ÆÊ±Æ÷
 	 this->scheduleUpdate();
 
     return true;
@@ -116,8 +94,26 @@ bool PointGame::init()
 void PointGame::onEnter()
 {
 	Layer::onEnter();
-
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    
+    this->curLevelIndex = Constant::level;
 	CCLOG("index: %d", this->curLevelIndex);
+    
+    //æ·»åŠ æ ‡é¢˜
+    string a = "ç¬¬";
+    string index = to_string(this->curLevelIndex);
+    string b = "å…³";
+    string text = a+index+b;
+    auto title = LabelTTF::create(text, "Arial", 36);
+	title->setColor(Color3B::BLACK);
+    // position the label on the center of the screen
+    title->setPosition(Vec2(origin.x + visibleSize.width/2,
+                            origin.y + visibleSize.height - title->getContentSize().height));
+    
+    // add the label as a child to this layer
+	this->addChild(title, 1);
+    
 	getLevelData();
 	PointGame::drawInit(this->curLevel);
 
@@ -189,7 +185,6 @@ void PointGame::getLevelData(void)
 
 void PointGame::drawInit(int level[2*MAX_NUM-1][2*MAX_NUM-1])
 {
-	//int maplength=100;
 	for(int i = 0; i < 6; i++)
 	{
 		if(i == MAX_NUM)
@@ -200,161 +195,164 @@ void PointGame::drawInit(int level[2*MAX_NUM-1][2*MAX_NUM-1])
 			addChild(line, 1);
 			line->drawSegment(start, end, 2, Color4F(1,0,0.2,1));
 		}
-		else if(i<MAX_NUM)
+		else if(i < MAX_NUM)
 		{
 			PointInfo myPointLeft;
-			for(int j = 0;j < MAX_NUM; j++)
+			for(int j = 0; j < MAX_NUM; j++)
 			{
-				//»­¾µ×Ó×ó²à5ÅÅµã£¬´æ·ÅÔÚleftPointMapÖÐ¡£
 				myVecLeft = Vec2((i+1)*HORIZON_SPACE, (j+1)*VERTICAL_SPACE);
 				auto r= DrawNode::create();
-				r->setAnchorPoint(ccp(0.5,0.5));
+				r->setAnchorPoint(Vec2(0.5,0.5));
 				addChild(r, 2);  
 				r->setTag(this->mapLength);
-				r->drawDot(myVecLeft, NORMAL_DOT_RADIUS, Color4F(0,0,0,1));
-
+				//r->drawDot(myVecLeft, NORMAL_DOT_RADIUS, Color4F(0,0,0,1));
+                
 				myPointLeft.tag = r->getTag();
 				myPointLeft.pos = myVecLeft;
 
 				this->pointMapLeft.insert(pair<int,PointInfo>(this->mapLength,myPointLeft));
+                
+                //create star sprite
+                auto texture = Director::getInstance()->getTextureCache()->addImage("star.png");
+                auto star = Sprite::createWithTexture(texture);
+                star->setScale(STAR_SCALE_FACTOR);
+                star->setTag(this->mapLength+LEFT_STAR_OFFSET);
+                star->setPosition(myVecLeft);
+                star->setAnchorPoint(Vec2(0.5, 0.5));
+                this->addChild(star, 3);
+                
 				this->mapLength++; 
-		//		CCLog("point x: %f, y: %f", myPointLeft.pos.x, myPointLeft.pos.y);
+		        //CCLog("point x: %f, y: %f", myPointLeft.pos.x, myPointLeft.pos.y);
 			}
 		}
 	}
-		this->mapLength=1100;
-		//»­ÓÒ±ßµÄµã
-	//	for(int m = 0;m<2*MAX_NUM - 1;m++)
-	//	{
-	//		for(int n = 0;n<2*MAX_NUM - 1;n++)
-	//		{
-			for(int m =8;m>=0;m--)
-			{
-				for(int n = 0;n<2*MAX_NUM - 1;n++)
-				{
-				myVecRight = Vec2((7+m/2.0)*HORIZON_SPACE, (n/2.0+1)*VERTICAL_SPACE);
-		//		CCLOG("right: %f, %f" , myVecRight.x, myVecRight.y );
-				if (level[m][n] == 1)//ÆÕÍ¨µã
-				{ 
-					PointInfo myPointRight;
-					auto r= DrawNode::create();
-					r->setAnchorPoint(ccp(0.5,0.5));
-					addChild(r, 2);  
-					r->drawDot(myVecRight, NORMAL_DOT_RADIUS, Color4F(0,0,0,1));
+    
+    this->mapLength=1100;
+    for(int m = 8; m >= 0; m--)
+    {
+        for(int n = 0;n < 2*MAX_NUM - 1;n++)
+        {
+            myVecRight = Vec2((7+m/2.0)*HORIZON_SPACE, (n/2.0+1)*VERTICAL_SPACE);
+            //CCLOG("right: %f, %f" , myVecRight.x, myVecRight.y );
+            //CCLOG("right level: m = %d, n = %d, value = %d" , m, n, level[m][n]);
+            if (level[m][n] == 1)//âˆ†â€™Ã•Â®Âµâ€ž
+            { 
+                PointInfo myPointRight;
+                auto r= DrawNode::create();
+                r->setAnchorPoint(Vec2(0.5,0.5));
+                addChild(r, 2);  
+                r->drawDot(myVecRight, NORMAL_DOT_RADIUS, Color4F(0,0,0,1));
+                myPointRight.tag = r->getTag();
+                myPointRight.pos = myVecRight;
+                this->pointMapRight.insert(pair<int,PointInfo>(this->mapLength,myPointRight));
+                this->mapLength++;
+            }
+            else if(level[m][n] == 3)//Ï€Ã¿ÂºÂ¸Âµâ€ž
+            {
+                PointInfo myPointRight;
+                this->keyPointNum++;
+                CCLOG("init keyPointNum %d  " , keyPointNum);
+                auto r= DrawNode::create();
+                r->setAnchorPoint(Vec2(0.5,0.5));
+                addChild(r, 2);  
+                r->drawDot(myVecRight, KEY_DOT_RADIUS, Color4F::BLUE);
+                myPointRight.tag = r->getTag();
+                myPointRight.pos = myVecRight;
+                myPointRight.isKeyPoint=1;
+                this->pointMapRight.insert(pair<int,PointInfo>(this->mapLength,myPointRight));
+                this->mapLength++;
+            }
+            else if(level[m][n] == 2)
+            {
+                auto r= DrawNode::create();
+                r->setAnchorPoint(Vec2(0.5,0.5));
+                addChild(r, 2);  
+                //r->setTag(this->baffleTag);
+                this->baffleList.push_front(myVecRight);
+                r->drawDot(myVecRight, KEY_DOT_RADIUS, Color4F::RED);
 
-					myPointRight.tag = r->getTag();
-					myPointRight.pos = myVecRight;
-					this->pointMapRight.insert(pair<int,PointInfo>(this->mapLength,myPointRight));
-					this->mapLength++;
-				}
-				else if(level[m][n] == 3)//¹Ø¼üµã
-				{
-					PointInfo myPointRight;
-					this->keyPointNum++;
-					CCLOG("init keyPointNum %d  " , keyPointNum);
-					auto r= DrawNode::create();
-					r->setAnchorPoint(ccp(0.5,0.5));
-					addChild(r, 2);  
-					r->drawDot(myVecRight, KEY_DOT_RADIUS, Color4F::BLUE);
-					myPointRight.tag = r->getTag();
-					myPointRight.pos = myVecRight;
-					myPointRight.isKeyPoint=1;
-					this->pointMapRight.insert(pair<int,PointInfo>(this->mapLength,myPointRight));
-					this->mapLength++;
-				}
-				else if(level[m][n] == 2)
-				{
-					auto r= DrawNode::create();
-					r->setAnchorPoint(ccp(0.5,0.5));
-					addChild(r, 2);  
-					//r->setTag(this->baffleTag);
-					this->baffleList.push_front(myVecRight);
-				    r->drawDot(myVecRight, KEY_DOT_RADIUS, Color4F::RED);
+                CCLOG("r: x=%f, y=%f, width=%f, height=%f",r->getBoundingBox().origin.x, r->getBoundingBox().origin.y, r->getBoundingBox().size.width, r->getBoundingBox().size.height);
+                this->baffleTag++;
 
-					CCLog("r: x=%f, y=%f, width=%f, height=%f",r->getBoundingBox().origin.x, r->getBoundingBox().origin.y, r->getBoundingBox().size.width, r->getBoundingBox().size.height);
-					this->baffleTag++;
+            }
+        }
+    }
+}
 
-				}
-			}
-		}
-		/*//¸ù¾ÝÊý×é»­¾µ×ÓÓÒ²à5ÅÅµã£¬´æ·ÅÔÚRightPointMapÖÐ¡£¾µÃæ¶ÔÓ¦Î»ÖÃµÄÁ½¸öµã£¬ÔÚÁ½¸öpointMapÖÐµÄKeyÏàÍ¬¡£¶¼ÎªmapLength.
 
-		myVecRight = Vec2((11-i)*HORIZON_SPACE, (j+1)*VERTICAL_SPACE);		
-		auto r2= DrawNode::create();
-		r2->setAnchorPoint(ccp(0.5,0.5));
-		addChild(r2, 2);  
-		r2->setTag(1000+maplength);
-		r2->drawDot(myVecRight, 5, Color4F(0,0,0,1));
-		myPointRigth.tag = r2->getTag();
-		myPointRigth.pos = myVecRight;
-		this->pointMapRight.insert(pair<int,PointInfo>(1000+maplength,myPointRigth));
-
-		maplength++;
-		}
-		}
-		*/
-	}
 bool PointGame::isTouchPoint(Vec2 vec)
 {
 	map<int,PointInfo>::iterator itor;
 
 	if(!this->pointMapLeft.empty())
 	{
-		CCLog("pointMap is not empty");	
+		CCLOG("pointMap is not empty");
 		itor=this->pointMapLeft.begin();
-
+        CCLOG("touch x: %f, y: %f", vec.x, vec.y);
 		while(itor!=this->pointMapLeft.end())
 		{
 				if(itor->second.flag!=1&&(vec.x>itor->second.pos.x-TOUCH_DIV&&vec.x<itor->second.pos.x+TOUCH_DIV&&vec.y>itor->second.pos.y-TOUCH_DIV&&vec.y<itor->second.pos.y+TOUCH_DIV))
-				{	
-				CCLog("touch x: %f, y: %f", vec.x, vec.y);	
-				DrawNode *aa = (DrawNode*)this->getChildByTag(itor->second.tag);
+                {
+                    CCLOG("touch x: %f, y: %f", vec.x, vec.y);
 
-				if(this->leftPointTagList.empty())
-				{
-					itor->second.flag=1;
-					this->leftPointTagList.push_back(itor->second.tag);
-					if(pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.isKeyPoint==1)
-					{
-						this->keyPointNum--;
-						CCLog("isTouchPoint: first touch keynum = %d",this->keyPointNum);	
-					}
+                    if(this->leftPointTagList.empty())
+                    {
+                        itor->second.flag=1;
+                        this->leftPointTagList.push_back(itor->second.tag);
+                        if(pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.isKeyPoint==1)
+                        {
+                            this->keyPointNum--;
+                            CCLOG("isTouchPoint: first touch keynum = %d",this->keyPointNum);
+                            int tag = itor->second.tag + LEFT_STAR_OFFSET;
+                            changeImage(tag, "flag.png");
+                            
+                        } else {
+                            int tag = itor->second.tag + LEFT_STAR_OFFSET;
+                            changeImage(tag, "starSelected.png");
+                        }
 
-				}else if(isNeighbor(this->pointMapLeft.find(this->leftPointTagList.back())->second.pos,itor->second.pos)){
-					CCLog("IS NEIGHBOR");
-					if (!canDrawLine(pointMapRight.find(leftPointTagList.back()+L_R_TAG_SAPCE)->second.pos,pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.pos))
-					{
-						break;
-					}
-					//Èç¹û¿ÉÒÔ»­Ïß£¬½«µ±Ç°µãÑ¹Õ»
-					drawLine(this->pointMapLeft.find(this->leftPointTagList.back())->second.pos,itor->second.pos,true);
-					//×ó²à»­ÏßµÄÍ¬Ê±ÔÚÓÒ²à¶ÔÓ¦Î»ÖÃ»­Ïß¡£
-					drawLine(pointMapRight.find(leftPointTagList.back()+L_R_TAG_SAPCE)->second.pos,pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.pos, false);
-					CCLog("keypointnum %d",this->keyPointNum);		
-					if(pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.isKeyPoint==1)
-					{
-						this->keyPointNum--;
-						CCLog("isTouchPoint: keynum = %d",this->keyPointNum);		
-					}
-					if(this->keyPointNum<=0)
-					{
-						menuCloseCallback(nullptr);
-					}
-					this->leftPointTagList.push_back(itor->second.tag);
-					itor->second.flag=1;
-					//ÉèÖÃÅÜ¶¯¾«Áé
-					addRunningSprite();
-				}	
-				itor++;
-				return true;
-			}
-			else itor++;
+                    }else if(isNeighbor(this->pointMapLeft.find(this->leftPointTagList.back())->second.pos,itor->second.pos)) {
+                        CCLOG("IS NEIGHBOR");
+                        if (!canDrawLine(pointMapRight.find(leftPointTagList.back()+L_R_TAG_SAPCE)->second.pos,pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.pos))
+                        {
+                            break;
+                        }
+                        //Â»ÃÏ€ËšÃ¸â€¦â€œâ€˜Âªâ‰ Å“ï¬‚Â£Â¨Î©Â´ÂµÂ±Â«âˆžÂµâ€žâ€”Ï€â€™Âª
+                        drawLine(this->pointMapLeft.find(this->leftPointTagList.back())->second.pos,itor->second.pos,true);
+                        //â—ŠÃ›â‰¤â€¡Âªâ‰ Å“ï¬‚ÂµÆ’Ã•Â¨Â Â±â€˜â„â€â€œâ‰¤â€¡âˆ‚â€˜â€Â¶Å’ÂªÃ·âˆšÂªâ‰ Å“ï¬‚Â°Â£
+                        drawLine(pointMapRight.find(leftPointTagList.back()+L_R_TAG_SAPCE)->second.pos,pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.pos, false);
+                        CCLOG("keypointnum %d",this->keyPointNum);
+                        if(pointMapRight.find(itor->second.tag+L_R_TAG_SAPCE)->second.isKeyPoint==1)
+                        {
+                            this->keyPointNum--;
+                            CCLOG("isTouchPoint: keynum = %d",this->keyPointNum);
+                            int tag = itor->second.tag + LEFT_STAR_OFFSET;
+                            changeImage(tag, "flag.png");
+                        } else {
+                            int tag = itor->second.tag + LEFT_STAR_OFFSET;
+                            changeImage(tag, "starSelected.png");
+                        }
+                        if(this->keyPointNum<=0)
+                        {
+                            menuCloseCallback(nullptr);
+                        }
+                        this->leftPointTagList.push_back(itor->second.tag);
+                        itor->second.flag=1;
+
+                        //â€¦Ã‹Ã·âˆšâ‰ˆâ€¹âˆ‚Ã˜Ã¦Â´Â¡Ãˆ
+                        addRunningSprite();
+                    }	
+                    itor++;
+                    return true;
+            }
+			else
+                itor++;
 		}
 		return false;
 	}
 	return false;
 }
-//Á½µãÁ¬Ïß
+//Â¡Î©Âµâ€žÂ¡Â¨Å“ï¬‚
 void PointGame::drawLine(Vec2 vec1,Vec2 vec2, bool isLeft){
 		//ccDrawLine(ccp(vec1.x,vec1.y), ccp(vec2.x,vec2.y));
 		auto line = DrawNode::create();
@@ -388,20 +386,20 @@ void PointGame::getVecByTag(int tag, Vec2& point)
 
 bool  PointGame::canDrawLine(Vec2 vec1,Vec2 vec2)
 {
-		CCLog("vec1: x=%f, y=%f", vec1.x, vec1.y);
-		CCLog("vec2: x=%f, y=%f",vec2.x, vec2.y);
+		CCLOG("vec1: x=%f, y=%f", vec1.x, vec1.y);
+		CCLOG("vec2: x=%f, y=%f",vec2.x, vec2.y);
 		Rect *rect = PointGame::createLineRect(vec1, vec2);
-		CCLog("rect: x=%f, y=%f, width=%f, height=%f",rect->origin.x, rect->origin.y, rect->size.width, rect->size.height);
+		CCLOG("rect: x=%f, y=%f, width=%f, height=%f",rect->origin.x, rect->origin.y, rect->size.width, rect->size.height);
 		
 		list<Vec2>::iterator itor;
 		itor=this->baffleList.begin();
 		while(itor!=baffleList.end())
 		{
 			//DrawNode *baffle = (DrawNode *)this->getChildByTag(*itor++);
-			CCLog("baffle: x=%f, y=%f",itor->x,itor->y);
+			CCLOG("baffle: x=%f, y=%f",itor->x,itor->y);
 			if (rect->containsPoint(*itor))
 			{
-				CCLog("collision!!!");
+				CCLOG("collision!!!");
 				delete rect;
 				return false;
 			}	
@@ -427,24 +425,22 @@ Rect* PointGame::createLineRect(Vec2 vec1,Vec2 vec2)
 	float height;
 	if (abs(vec2.y - vec1.y) < 0.01)
 	{
-		//Èç¹ûyÏàµÈ£¬¾ØÐÎºá×Å»­
+		//Â»ÃÏ€ËšyÅ“â€¡ÂµÂ»Â£Â¨Ã¦Ã¿â€“Å’âˆ«Â·â—Šâ‰ˆÂªâ‰ 
 		width = (abs(vec1.x - vec2.x) > abs(vec1.y - vec2.y))?abs(vec1.x - vec2.x):abs(vec1.y - vec2.y) + 10;
 		height = 10;
 	} 
 	else
 	{
-		//Èç¹ûy²»ÏàµÈ£¬¾ØÐÎÊú×Å»­
+		//Â»ÃÏ€Ëšyâ‰¤ÂªÅ“â€¡ÂµÂ»Â£Â¨Ã¦Ã¿â€“Å’Â Ë™â—Šâ‰ˆÂªâ‰ 
 		width = 10;
 		height = (abs(vec1.x - vec2.x) > abs(vec1.y - vec2.y))?abs(vec1.x - vec2.x):abs(vec1.y - vec2.y) + 10;
 	}
-	//Rect rect(x, y, width, height);
-
 	Rect *rect = new Rect(x, y, width, height);
 
 	return rect;
 }
 
-//ÅÐ¶ÏÁ½µãÊÇ·ñÏàÁÚ
+//â‰ˆâ€“âˆ‚Å“Â¡Î©Âµâ€žÂ Â«âˆ‘Ã’Å“â€¡Â¡â„
 bool  PointGame::isNeighbor(Vec2 vec1,Vec2 vec2){
 	//CCLog("vec1 x: %f, y: %f", vec1.x, vec1.y);
 	//CCLog("vec2 x: %f, y: %f", vec2.x, vec2.y);
@@ -479,12 +475,12 @@ void PointGame::update(float dt)
 void PointGame::addRunningSprite(void)
 {
 	//CCLog("leftPointTagList size: %d",this->leftPointTagList.size());
-	//ÉèÖÃÅÜ¶¯¾«Áé
+	//â€¦Ã‹Ã·âˆšâ‰ˆâ€¹âˆ‚Ã˜Ã¦Â´Â¡Ãˆ
 	Sprite *sprite;
 	if (this->getChildByTag(RUNNING_SPRITE_TAG) == NULL)
 	{
-		sprite = Sprite::create("soccer44.png");
-		sprite->setScale(0.6);
+		sprite = Sprite::create("UFO.png");
+		sprite->setScale(UFO_SCALE_FACTOR);
 		sprite->setTag(RUNNING_SPRITE_TAG);
 		this->addChild(sprite, 10);
 	} 
@@ -537,18 +533,17 @@ void PointGame::menuCloseCallback(Ref* pSender)
     //Director::getInstance()->end();
 	if (this->curLevelIndex < MAX_LEVEL_NUM)
 	{
-		auto director = Director::getInstance();
 		auto scene = PointGame::createScene();
-		auto layer = (PointGame *)scene->getChildren().at(0);
-		layer->curLevelIndex = this->curLevelIndex + 1;
+        Constant::level = this->curLevelIndex + 1;
 		// run
-		Director::sharedDirector()->replaceScene(TransitionFade::create(1,scene));
+		Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
 	}
 
-
+/*
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
 #endif
+*/
 }
 
 void PointGame::revokeCallback(Ref* pSender)
@@ -559,7 +554,22 @@ void PointGame::revokeCallback(Ref* pSender)
     return;
 #endif
 	CCLOG("You pressed the revoke button");
-    //Director::getInstance()->end();
+    
+    if(this->leftPointTagList.size()==1)
+    {
+        pointMapLeft.find(this->leftPointTagList.back())->second.flag=0;
+		if(pointMapRight.find(this->leftPointTagList.back()+L_R_TAG_SAPCE)->second.isKeyPoint==1)
+		{
+			this->keyPointNum++;
+		}
+        int tag = this->leftPointTagList.back() + LEFT_STAR_OFFSET;
+        Sprite *sprite = (Sprite *)this->getChildByTag(tag);
+        auto texture = Director::getInstance()->getTextureCache()->addImage("star.png");
+        sprite->setTexture(texture);
+		this->leftPointTagList.pop_back();
+		this->removeChildByTag(RUNNING_SPRITE_TAG);
+    }
+    
 	if ((!this->leftLineTagStack.empty())&&(!this->rightLineTagStack.empty()))
 	{
 		CCLOG("go into revokeCallback");
@@ -578,25 +588,19 @@ void PointGame::revokeCallback(Ref* pSender)
 		}
 		this->leftLineTagStack.pop();
 		this->rightLineTagStack.pop();
+        int tag = this->leftPointTagList.back() + LEFT_STAR_OFFSET;
+        Sprite *sprite = (Sprite *)this->getChildByTag(tag);
+        auto texture = Director::getInstance()->getTextureCache()->addImage("star.png");
+        sprite->setTexture(texture);
 		this->leftPointTagList.pop_back();
 	//	rightPointTagStack.pop();
 		addRunningSprite();
 	}
-	if(this->leftPointTagList.size()==1)
-	{
-		pointMapLeft.find(this->leftPointTagList.back())->second.flag=0;
-		if(pointMapRight.find(this->leftPointTagList.back()+L_R_TAG_SAPCE)->second.isKeyPoint==1)
-		{
-			this->keyPointNum++;
-		}
-		this->leftPointTagList.pop_back();
-		this->removeChildByTag(RUNNING_SPRITE_TAG);
-	}
-	
-
+/*
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
 #endif
+*/
 }
 
 void PointGame::backToChooseLevel(Ref* pSender)
@@ -607,8 +611,20 @@ void PointGame::backToChooseLevel(Ref* pSender)
     return;
 #endif
 	auto scene = GameLevelChoose::createScene();
-	Director::sharedDirector()->replaceScene(TransitionFade::create(1,scene));
-	#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
+/*
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
 #endif
+*/
+}
+
+void PointGame::changeImage(int tag, const string& name)
+{
+    Sprite *sprite = (Sprite *)this->getChildByTag(tag);
+    auto texture = Director::getInstance()->getTextureCache()->addImage(name);
+    sprite->setTexture(texture);
+    sprite->setOpacity(70);
+    auto fadeAction = FadeIn::create(1);
+    sprite->runAction(fadeAction);
 }
