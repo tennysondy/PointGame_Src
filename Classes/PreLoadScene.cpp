@@ -65,3 +65,4 @@ void PreLoadScene::onEnterTransitionDidFinish()
     auto scene = PointGame::createScene();
     Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
 }
+

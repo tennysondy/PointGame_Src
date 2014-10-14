@@ -44,6 +44,7 @@ bool PointGame::init()
     {
         return false;
     }
+
     auto layer = LayerColor::create(Color4B(255,255,255,255));
 	this->addChild(layer, 0);
     Size visibleSize = Director::getInstance()->getVisibleSize();
