@@ -27,8 +27,28 @@ bool MainScene::init()
 	//BG->setOpacity(200);
 	this->addChild(BG,0);
 	chooseMenu();
+    
 	return true;
 }
+
+void MainScene::onEnter()
+{
+    Layer::onEnter();
+    
+
+}
+
+void MainScene::onEnterTransitionDidFinish()
+{
+    Layer::onEnterTransitionDidFinish();
+    
+    auto ps = ParticleSystemQuad::create("current.plist");
+    //auto texture = Director::getInstance()->getTextureCache()->addImage("beam.png");
+    //ps->setTexture(texture);
+    ps->setPosition(Vec2(250,200));
+    this->addChild(ps,10);
+}
+
 void MainScene::chooseMenu()
 {
 	
@@ -45,21 +65,18 @@ void MainScene::chooseMenu()
 	auto startItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::startGame, this));
 	startItem->addChild(title);
 
-	//”Œœ∑πÊ‘Ú
 	title = Label::createWithSystemFont("Role", "Arial", 30);
 	title->setPosition(Vec2(60,35));
 	auto gameRoleItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::gameRole, this));
 	gameRoleItem->addChild(title);
 
-	//∏¸∂‡”Œœ∑
 	title = Label::createWithSystemFont("More", "Arial", 30);
 	title->setPosition(Vec2(60,35));
 	auto moreGameItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::moreGame, this));
 	moreGameItem->addChild(title);
 
-	//≤Àµ•
 	auto menu = CCMenu::create(startItem, gameRoleItem, moreGameItem, nullptr);
-	//∑≈‘⁄Õ¨“ª¡–
+
 	menu->alignItemsVerticallyWithPadding(20);
 	menu->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
 

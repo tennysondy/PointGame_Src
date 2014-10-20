@@ -21,10 +21,9 @@ public:
 	bool _level_lock;
 
 private:
-	//init里面添加菜单，这里是回调函数
+    void returnToMainMenu(Ref* pSender);
 	void level(Ref* pSender);
 
-	//根据不同级别createLabel, 菜单标签
 	Label* createLevelTxt(string& sLv1);
 
 

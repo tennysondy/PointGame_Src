@@ -22,6 +22,7 @@ public:
     virtual bool init();
     virtual void onEnter();
     virtual void onEnterTransitionDidFinish();
+    void switchScene(float dt);
     CREATE_FUNC(PreLoadScene);
 };
 

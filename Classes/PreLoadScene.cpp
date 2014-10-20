@@ -10,6 +10,8 @@
 #include "Constant.h"
 #include "PointGameScene.h"
 
+USING_NS_CC;
+
 Scene* PreLoadScene::createScene()
 {
     // 'scene' is an autorelease object
@@ -36,11 +38,16 @@ bool PreLoadScene::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     
-    string a = "第 ";
+    //string a = "汉 ";
     string index = to_string(Constant::level);
-    string b = " 关";
-    string text = a+index+b;
-    auto title = LabelTTF::create(text, "Arial", 100);
+    //string b = " 体";
+    string text = index;
+    
+    TTFConfig config("Marker Felt.ttf", 120);
+    auto title = Label::createWithTTF(config, text, TextHAlignment::CENTER);
+    
+    //auto title = Label::createWithTTF(text, "DFGirl - Kelvin Regular", 120);
+    
 	title->setColor(Color3B::BLACK);
     // position the label on the center of the screen
     title->setPosition(Vec2(origin.x + visibleSize.width/2,
@@ -49,20 +56,29 @@ bool PreLoadScene::init()
     // add the label as a child to this layer
 	this->addChild(title, 1);
     
+    
+    
+    //this->scheduleUpdate();
+    this->scheduleOnce(schedule_selector(PreLoadScene::switchScene), 1.1);
+    
     return true;
 }
 
 void PreLoadScene::onEnter()
 {
-    //auto scene = PointGame::createScene();
-    //Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
+    Layer::onEnter();
 
 }
 
 void PreLoadScene::onEnterTransitionDidFinish()
 {
-    //Layer::onEnterTransitionDidFinish();
-    auto scene = PointGame::createScene();
-    Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
+    Layer::onEnterTransitionDidFinish();
+    //auto scene = PointGame::createScene();
+    //Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
 }
 
+void PreLoadScene::switchScene(float dt)
+{
+    auto scene = PointGame::createScene();
+    Director::getInstance()->replaceScene(TransitionFadeBL::create(1,scene));
+}
