@@ -3,40 +3,58 @@
 
 #include <list>
 #include <map>
+#include <string>
 #include "cocos2d.h"
 #include "PointInfo.h"
-#include "GameLevelChoose.h"
 
 using namespace std;
 USING_NS_CC;
+
 #define HORIZON_SPACE ((Director::getInstance()->getVisibleSize()).width/12)
 #define VERTICAL_SPACE ((Director::getInstance()->getVisibleSize()).height/6)
-#define MAX_NUM 5
-#define NORMAL_DOT_RADIUS       10
-#define KEY_DOT_RADIUS                15
-#define TOUCH_DIV 40
-#define LEVEL_ROW              9
-#define LEVEL_COLUMN       9
-#define L_R_TAG_SAPCE 1000
-#define MAX_LEVEL_NUM     12
-#define RUNNING_SPRITE_TAG   25000
+#define MAX_NUM                           5
+#define NORMAL_DOT_RADIUS                 10
+#define KEY_DOT_RADIUS                    15
+#define TOUCH_DIV                         40
+#define LEVEL_ROW                         9
+#define LEVEL_COLUMN                      9
+#define L_R_TAG_SAPCE                     1000
+#define MAX_LEVEL_NUM                     12
+//
+#define RUNNING_SPRITE_TAG                25000
+#define LEVEL_PAUSE_LAYER_TAG             25001
+#define LEVEL_PASS_LAYER_TAG              25002
 
+#define RETURN_WIDTH                      100
+#define RETURN_SCALE_FACTOR               HORIZON_SPACE/2/RETURN_WIDTH
+
+#define START_AGAIN_WIDTH                 100
+#define START_AGAIN_SCALE_FACTOR          HORIZON_SPACE/2/START_AGAIN_WIDTH
+
+#define PAUSE_AGAIN_WIDTH                 100
+#define PAUSE_AGAIN_SCALE_FACTOR          HORIZON_SPACE/2/PAUSE_AGAIN_WIDTH
+
+#define LEFT_STAR_OFFSET                  100
+#define RIGHT_STAR_OFFSET                 100
+
+#define UFO_WIDTH                         100
+#define UFO_SCALE_FACTOR                  HORIZON_SPACE/4/UFO_WIDTH
+
+//point name
+#define P_NORMAL_IMG_NAME                 "crystal_green.png"
+#define P_HIGHLIGHT_IMG_NAME              "crystal_orange.png"
+#define P_KEY_IMG_NAME                    "crystal_red.png"
+
+#define POINT_WIDTH                       200
+#define POINT_SCALE_FACTOR                HORIZON_SPACE/2/POINT_WIDTH
+
+#define BAFFLE_H_IMG_NAME                 "woodH.png"
+#define BAFFLE_V_IMG_NAME                 "woodV.png"
+#define BAFFLE_H_WIDTH                    100
+#define BAFFLE_SCALE_FACTOR               HORIZON_SPACE/2/BAFFLE_H_WIDTH
 
 class PointInfo;
-/*
-struct PointCmp{
-	bool operator () (const PointInfo& point1, const PointInfo& point2){
-		
-			double e=0.0001;
-			if(point1.pos.x>point2.pos.x+e) { return false; }
-			if(point1.pos.x<point2.pos.x-e) { return true; }
-			if(point1.pos.y>point2.pos.y+e) { return false; }
-			if(point1.pos.y<point2.pos.y-e) { return true; }
-			
-			return false;
-		}
-	};
-*/
+
 class PointGame : public cocos2d::Layer
 {
 public:
@@ -74,16 +92,26 @@ public:
     virtual bool init();  
 	virtual void onEnter();
     void update(float dt); //定义系统每帧更新函数
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void revokeCallback(Ref* pSender);
-	void backToChooseLevel(Ref* pSender);
+
 	void onTouchEnded(Touch* touch, Event* event);
 	void spriteMoveFinished(Ref* pSender);
     void getVecByTag(int tag, Vec2& point);
 	void addRunningSprite(void);
 	void getLevelData(void);
 	void setCurrentLevel(int level[9][9]);
+    void changeImage(int tag, const string& name);
+    //level pass
+    void leverPass();
+    // a selector callback
+	void revokeCallback(Ref* pSender);
+    void startLevelAgain(Ref* pSender);
+    void gamePause(Ref* pSender);
+    void gameContinue(Ref* pSender);
+    void gameReturnToLevelChoose(Ref* pSender);
+    void gameReturnToMainMenu(Ref* pSender);
+    void tryAgain(Ref* pSender);
+    void nextLevel(Ref* pSender);
+    
     // implement the "static create()" method manually
     CREATE_FUNC(PointGame);
 };

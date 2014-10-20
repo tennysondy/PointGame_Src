@@ -1,7 +1,7 @@
 #include "MainScene.h"
 #include "GameLevelChoose.h"
 
-
+USING_NS_CC;
 
 MainScene::MainScene(void)
 {
@@ -27,8 +27,28 @@ bool MainScene::init()
 	//BG->setOpacity(200);
 	this->addChild(BG,0);
 	chooseMenu();
+    
 	return true;
 }
+
+void MainScene::onEnter()
+{
+    Layer::onEnter();
+    
+
+}
+
+void MainScene::onEnterTransitionDidFinish()
+{
+    Layer::onEnterTransitionDidFinish();
+    
+    auto ps = ParticleSystemQuad::create("current.plist");
+    //auto texture = Director::getInstance()->getTextureCache()->addImage("beam.png");
+    //ps->setTexture(texture);
+    ps->setPosition(Vec2(250,200));
+    this->addChild(ps,10);
+}
+
 void MainScene::chooseMenu()
 {
 	
@@ -37,29 +57,28 @@ void MainScene::chooseMenu()
 	const char* norImg = "choose_btn_nor.png";
 	const char* lightImg = "choose_btn_light.png";
 
-	//开始
-	auto title = Label::create("Start", "Arial",30);
-	title->setPosition(ccp(60,35));
+	//biao'ti
+    auto title = Label::createWithSystemFont("Start", "Arial", 30);
+	title->setPosition(Vec2(60, 35));
+    
+    
 	auto startItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::startGame, this));
 	startItem->addChild(title);
 
-	//游戏规则
-	title = Label::create("Role", "Arial", 30);
-	title->setPosition(ccp(60,35));
+	title = Label::createWithSystemFont("Role", "Arial", 30);
+	title->setPosition(Vec2(60,35));
 	auto gameRoleItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::gameRole, this));
 	gameRoleItem->addChild(title);
 
-	//更多游戏
-	title = Label::create("More", "Arial", 30);
-	title->setPosition(ccp(60,35));
+	title = Label::createWithSystemFont("More", "Arial", 30);
+	title->setPosition(Vec2(60,35));
 	auto moreGameItem = MenuItemImage::create(norImg, lightImg, CC_CALLBACK_1(MainScene::moreGame, this));
 	moreGameItem->addChild(title);
 
-	//菜单
 	auto menu = CCMenu::create(startItem, gameRoleItem, moreGameItem, nullptr);
-	//放在同一列
+
 	menu->alignItemsVerticallyWithPadding(20);
-	menu->setPosition(ccp(visibleSize.width/2, visibleSize.height/2));
+	menu->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
 
 	this->addChild(menu);
 	
@@ -67,18 +86,16 @@ void MainScene::chooseMenu()
 
 void MainScene::startGame(Ref* pSender)
 {
-	CCLog("startGame");
+	CCLOG("startGame");
 	auto scene = GameLevelChoose::createScene();
-	//auto layer = Layer::create();
-	//scene->addChild(layer);
-	Director::sharedDirector()->replaceScene(TransitionFade::create(1,scene));
+	Director::getInstance()->replaceScene(TransitionFade::create(1,scene));
 	
 }
 void MainScene::gameRole(Ref* pSender)
 {
-	CCLog("gameRole");
+	CCLOG("gameRole");
 }
 void MainScene::moreGame(Ref* pSender)
 {
-	CCLog("moreGame");
+	CCLOG("moreGame");
 }

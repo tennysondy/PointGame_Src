@@ -9,13 +9,13 @@ public:
 	~MainScene(void);
 	CREATE_FUNC(MainScene);
 	virtual bool init();
+    virtual void onEnter();
+    virtual void onEnterTransitionDidFinish();
 	static Scene* createScene();
 
 private:
-	//选择菜单
 	void chooseMenu();
 
-	//三个菜单的回调函数
 	void startGame(Ref* pSender);
 	void gameRole(Ref* pSender);
 	void moreGame(Ref* pSender);
